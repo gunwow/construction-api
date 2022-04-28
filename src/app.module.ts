@@ -1,9 +1,18 @@
-import { Module, ValidationPipe } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './common/database';
 import { CommandModule } from 'nestjs-command';
-import { ExampleModule } from './example/example.module';
 import { APP_PIPE } from '@nestjs/core';
+import { UserModule } from './user/user.module';
+import { RoleModule } from './role/role.module';
+import { AuthModule } from './auth/auth.module';
+import { AuthMiddleware } from './auth/middleware/auth.middleware';
+import { HashModule } from './hash/hash.module';
 
 @Module({
   imports: [
@@ -12,7 +21,10 @@ import { APP_PIPE } from '@nestjs/core';
     }),
     DatabaseModule,
     CommandModule,
-    ExampleModule,
+    UserModule,
+    RoleModule,
+    AuthModule,
+    HashModule,
   ],
   providers: [
     {
@@ -21,4 +33,8 @@ import { APP_PIPE } from '@nestjs/core';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes('*');
+  }
+}
