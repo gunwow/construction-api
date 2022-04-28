@@ -26,8 +26,6 @@ export class AuthService {
     const accessToken: string = await this.generateAccessToken(user);
     const refreshToken: string = await this.generateRefreshToken(user);
 
-    console.log(user);
-
     return { accessToken, refreshToken };
   }
 
