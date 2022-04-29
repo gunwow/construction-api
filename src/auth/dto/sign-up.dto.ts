@@ -4,9 +4,8 @@ import {
   IsEmail,
   Length,
   IsArray,
-  Max,
   ArrayNotEmpty,
-} from 'class-validator';
+} from 'class-validatorp';
 
 export class SignUpDTO {
   @IsNotEmpty()

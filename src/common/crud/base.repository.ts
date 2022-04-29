@@ -8,7 +8,6 @@ import {
   PaginationParams,
   ResultsWithCountSet,
 } from './type';
-import { Op } from 'sequelize';
 
 export abstract class BaseRepository<T extends Model<T>> {
   maxLimit = 100;

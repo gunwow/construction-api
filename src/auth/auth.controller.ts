@@ -16,7 +16,6 @@ export class AuthController {
   }
 
   @Post('refresh')
-  @HttpCode(200)
   async refresh(@Body() payload: RefreshDTO): Promise<AccessTokenDTO> {
     return this.authService.refresh(payload);
   }

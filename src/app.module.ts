@@ -13,6 +13,7 @@ import { RoleModule } from './role/role.module';
 import { AuthModule } from './auth/auth.module';
 import { AuthMiddleware } from './auth/middleware/auth.middleware';
 import { HashModule } from './hash/hash.module';
+import { OrganizationModule } from './organization/organization.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { HashModule } from './hash/hash.module';
     RoleModule,
     AuthModule,
     HashModule,
+    OrganizationModule,
   ],
   providers: [
     {

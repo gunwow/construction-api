@@ -7,11 +7,13 @@ import {
   BelongsToMany,
   DefaultScope,
 } from 'sequelize-typescript';
+import { Organization } from '../../organization/model/organization.model';
+import { UserOrganization } from '../../organization/model/user-organization.model';
 import { Role } from '../../role/model/role.model';
 import { UserRole } from '../../role/model/user-role.model';
 
 @DefaultScope(() => ({
-  include: [Role],
+  include: [Role, Organization],
 }))
 @Table({
   tableName: 'users',
@@ -46,4 +48,7 @@ export class User extends Model {
 
   @BelongsToMany(() => Role, () => UserRole)
   roles: Role[];
+
+  @BelongsToMany(() => Organization, () => UserOrganization)
+  organizations: Organization[];
 }

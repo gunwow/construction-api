@@ -47,12 +47,12 @@ export class AuthService {
         throw new Error('Refresh token not provided');
       }
 
-      const user: User = await this.userService.findById(payload.userId);
+      const user: User = await this.userService.findByIdOrFail(payload.userId);
       const accessToken: string = await this.generateAccessToken(user);
 
       return { accessToken };
     } catch (err) {
-      throw new UnauthorizedException(err);
+      throw new UnauthorizedException(err.message);
     }
   }
 
