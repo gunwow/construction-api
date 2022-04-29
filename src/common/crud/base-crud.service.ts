@@ -7,6 +7,7 @@ import {
   PaginationParams,
   ResultsWithCountSet,
 } from './type';
+import { NotFoundException } from '@nestjs/common';
 
 export abstract class BaseCrudService<
   M extends Model = Model,
@@ -37,6 +38,14 @@ export abstract class BaseCrudService<
 
   async findById(id: string): Promise<M> {
     return this.repository.findOneById(id);
+  }
+
+  async findByIdOrFail(id: string): Promise<M> {
+    const model: M = await this.findById(id);
+    if (!model) {
+      throw new NotFoundException('Model not found');
+    }
+    return model;
   }
 
   async findOne(options?: FindOptions<M>): Promise<M> {

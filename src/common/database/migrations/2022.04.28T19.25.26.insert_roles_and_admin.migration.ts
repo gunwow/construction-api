@@ -3,19 +3,19 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const up = async ({ context }: IMigratorOptions): Promise<void> => {
   const adminRoleId: string = uuidv4();
-  const roles: string[] = [
-    'admin',
-    'company',
-    'receptionist',
-    'commercialist',
-    'customer',
+  const roles: { name: string; isChoosable: boolean }[] = [
+    { name: 'admin', isChoosable: false },
+    { name: 'company', isChoosable: true },
+    { name: 'receptionist', isChoosable: false },
+    { name: 'commercialist', isChoosable: false },
+    { name: 'customer', isChoosable: true },
   ];
 
   await context.bulkInsert(
     'roles',
-    roles.map((name: string, index: number) => ({
+    roles.map((role, index: number) => ({
       id: index === 0 ? adminRoleId : uuidv4(),
-      name,
+      ...role,
     })),
   );
 

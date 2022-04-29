@@ -8,6 +8,7 @@ import {
   PaginationParams,
   ResultsWithCountSet,
 } from './type';
+import { Op } from 'sequelize';
 
 export abstract class BaseRepository<T extends Model<T>> {
   maxLimit = 100;
@@ -22,6 +23,15 @@ export abstract class BaseRepository<T extends Model<T>> {
 
   async findAll(options?: FindOptions<T>): Promise<T[]> {
     return this.model.findAll(options);
+  }
+
+  async findAllByIds(ids: string[], options?: FindOptions<T>): Promise<T[]> {
+    return this.model.findAll({
+      ...options,
+      where: {
+        id: ids,
+      },
+    });
   }
 
   async findAndCountAll(

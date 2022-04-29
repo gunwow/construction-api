@@ -48,6 +48,10 @@ export const up = async ({ context }: IMigratorOptions): Promise<void> => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    isChoosable: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   });
 
   await context.createTable('users_roles', {

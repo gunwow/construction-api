@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { HashService } from '../hash/hash.service';
 import { JwtService } from '../hash/jwt.service';
 import { User } from '../user/model/user.model';
@@ -8,6 +12,10 @@ import { SignInDTO } from './dto/sign-in.dto';
 import { v4 } from 'uuid';
 import { AccessTokenDTO, AuthTokensDTO } from './dto/auth-tokens.dto';
 import { RefreshDTO } from './dto/refresh.dto';
+import { SignUpDTO } from './dto/sign-up.dto';
+import { Role } from '../role/model/role.model';
+import { RoleService } from '../role/role.service';
+import { UserRoleRepository } from '../role/user-role.repository';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +23,8 @@ export class AuthService {
     private readonly hashService: HashService,
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
+    private readonly roleService: RoleService,
+    private readonly userRoleRepository: UserRoleRepository,
   ) {}
 
   async signIn({ email, password }: SignInDTO): Promise<AuthTokensDTO> {
@@ -44,6 +54,31 @@ export class AuthService {
     } catch (err) {
       throw new UnauthorizedException(err);
     }
+  }
+
+  async signUp({ roles: initRolesIds, ...rest }: SignUpDTO): Promise<void> {
+    const rolesIds: string[] = [initRolesIds[0]];
+    const roles: Role[] = await this.roleService.repository.findAllByIds(
+      rolesIds,
+    );
+
+    const areRolesChoosable: boolean = roles.every(
+      (role: Role) => role.isChoosable,
+    );
+
+    if (!areRolesChoosable) {
+      throw new ConflictException('Some of the roles are forbidden.');
+    }
+
+    // create user and assoicate him with the roles
+    const user: User = await this.userService.create({ roles, ...rest });
+    await this.userRoleRepository.createMany(
+      roles.map((role: Role) => ({
+        roleId: role.id,
+        userId: user.id,
+      })),
+    );
+    return;
   }
 
   async generateAccessToken(user: User): Promise<string> {

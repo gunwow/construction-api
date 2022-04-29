@@ -16,4 +16,9 @@ export class Role extends Model {
     allowNull: false,
   })
   name: string;
+
+  @Column({
+    defaultValue: false,
+  })
+  isChoosable: boolean;
 }
