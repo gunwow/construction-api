@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumberString,
+  IsOptional,
+  IsString,
+  Length,
+} from 'class-validator';
 
 export class OrganizationDTO {
   @IsString()
@@ -14,6 +20,7 @@ export class OrganizationDTO {
   address: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsNumberString()
+  @Length(13, 13)
   jib: string;
 }

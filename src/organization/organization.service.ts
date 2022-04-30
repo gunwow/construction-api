@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { FindOptions } from 'sequelize';
 import { Includeable } from 'sequelize/types';
 import { BaseCrudService, ModelPayload, PaginatedSet } from '../common/crud';
 import { QueryParamsDTO } from '../common/http/query-params.dto';
@@ -22,7 +27,7 @@ export class OrganizationService extends BaseCrudService<
   private resolveUserJoinClause(user: User): Includeable {
     return {
       model: User,
-      required: false,
+      required: true,
       through: { where: { userId: user.id } },
     };
   }
@@ -30,14 +35,20 @@ export class OrganizationService extends BaseCrudService<
   async findForUser(
     user: User,
     query: QueryParamsDTO,
+    options?: FindOptions<Organization>,
   ): Promise<PaginatedSet<Organization[]>> {
     return this.findPaginated(query, {
+      ...options,
       include: [this.resolveUserJoinClause(user)],
     });
   }
 
-  async findOneForUser(user: User) {
+  async findOneForUser(
+    user: User,
+    options?: FindOptions<Organization>,
+  ): Promise<Organization> {
     return this.findOne({
+      ...options,
       include: [this.resolveUserJoinClause(user)],
     });
   }
@@ -57,7 +68,19 @@ export class OrganizationService extends BaseCrudService<
       userId: user.id,
       organizationId: organization.id,
     });
+    return organization;
+  }
 
+  async updateForUser(
+    user: User,
+    id: string,
+    payload: ModelPayload<Organization>,
+  ): Promise<Organization> {
+    if (!(await this.findOneForUser(user, { where: { id } }))) {
+      throw new NotFoundException('Model not found.');
+    }
+
+    const organization: Organization = await this.update(id, payload);
     return organization;
   }
 }
