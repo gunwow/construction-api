@@ -57,10 +57,20 @@ export class AuthService {
   }
 
   async signUp({ roles: initRolesIds, ...rest }: SignUpDTO): Promise<void> {
+    if (await this.userService.repository.findByEmail(rest.email)) {
+      throw new ConflictException(`Email is already occupied`);
+    }
+
     const rolesIds: string[] = [initRolesIds[0]];
     const roles: Role[] = await this.roleService.repository.findAllByIds(
       rolesIds,
     );
+
+    if (roles.length === 0) {
+      throw new ConflictException(
+        `You have to choose at least one valid role.`,
+      );
+    }
 
     const areRolesChoosable: boolean = roles.every(
       (role: Role) => role.isChoosable,

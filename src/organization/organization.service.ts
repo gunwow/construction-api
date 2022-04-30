@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Includeable } from 'sequelize/types';
 import { BaseCrudService, ModelPayload, PaginatedSet } from '../common/crud';
 import { QueryParamsDTO } from '../common/http/query-params.dto';
 import { User } from '../user/model/user.model';
@@ -18,12 +19,26 @@ export class OrganizationService extends BaseCrudService<
     super(repository);
   }
 
+  private resolveUserJoinClause(user: User): Includeable {
+    return {
+      model: User,
+      required: false,
+      through: { where: { userId: user.id } },
+    };
+  }
+
   async findForUser(
     user: User,
     query: QueryParamsDTO,
   ): Promise<PaginatedSet<Organization[]>> {
     return this.findPaginated(query, {
-      include: [{ model: User, required: true }],
+      include: [this.resolveUserJoinClause(user)],
+    });
+  }
+
+  async findOneForUser(user: User) {
+    return this.findOne({
+      include: [this.resolveUserJoinClause(user)],
     });
   }
 
@@ -31,6 +46,11 @@ export class OrganizationService extends BaseCrudService<
     user: User,
     payload: ModelPayload<Organization>,
   ): Promise<Organization> {
+    const existingOganization: Organization = await this.findOneForUser(user);
+    if (existingOganization) {
+      throw new ForbiddenException(`Can't have more than 1 organization`);
+    }
+
     const organization: Organization = await super.create(payload);
 
     await this.userOrganizationRepository.create({

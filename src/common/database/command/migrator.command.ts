@@ -32,6 +32,15 @@ export class MigratorCommand {
   }
 
   @Command({
+    command: 'migrate:refresh',
+    describe: 'Reverts and performs database migrations at once',
+  })
+  async refresh(): Promise<void> {
+    await this.reset();
+    await this.up();
+  }
+
+  @Command({
     command: 'migration:create <migration>',
     describe: 'Create new migration file',
   })

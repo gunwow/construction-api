@@ -5,7 +5,7 @@ export const up = async ({ context }: IMigratorOptions): Promise<void> => {
   const adminRoleId: string = uuidv4();
   const roles: { name: string; isChoosable: boolean }[] = [
     { name: 'admin', isChoosable: false },
-    { name: 'company', isChoosable: true },
+    { name: 'manager', isChoosable: true },
     { name: 'receptionist', isChoosable: false },
     { name: 'commercialist', isChoosable: false },
     { name: 'customer', isChoosable: true },

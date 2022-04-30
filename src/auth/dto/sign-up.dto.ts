@@ -5,12 +5,14 @@ import {
   Length,
   IsArray,
   ArrayNotEmpty,
-} from 'class-validatorp';
+  IsUUID,
+} from 'class-validator';
 
 export class SignUpDTO {
   @IsNotEmpty()
   @IsArray()
   @ArrayNotEmpty()
+  @IsUUID('4', { each: true })
   roles: string[];
 
   @IsString()

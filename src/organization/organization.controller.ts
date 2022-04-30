@@ -24,7 +24,7 @@ export class OrganizationController {
     return this.organizationService.findForUser(user, query);
   }
 
-  @Roles(RoleEnum.COMPANY)
+  @Roles(RoleEnum.MANAGER)
   @Post()
   async createForUser(
     @ReqUser() user: User,
