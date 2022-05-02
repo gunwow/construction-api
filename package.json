@@ -23,6 +23,7 @@
     "db:migrate": "yarn command migrate",
     "db:migrate:down": "yarn command migrate:down",
     "db:migrate:reset": "yarn command migrate:reset",
+    "db:migrate:refresh": "yarn command migrate:refresh",
     "db:migration:create": "yarn command migration:create"
   },
   "dependencies": {
@@ -32,6 +33,7 @@
     "@nestjs/jwt": "^8.0.0",
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^8.2.2",
+    "@nestjs/swagger": "^5.2.1",
     "axios": "~0.24.0",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
@@ -50,6 +52,7 @@
     "sequelize": "6.17.0",
     "sequelize-typescript": "2.1.3",
     "shelljs": "^0.8.5",
+    "swagger-ui-express": "^4.3.0",
     "umzug": "^3.0.0-beta.16",
     "uuid": "^8.3.2",
     "yargs": "^17.2.1"

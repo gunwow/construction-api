@@ -13,9 +13,6 @@ import { v4 } from 'uuid';
 import { AccessTokenDTO, AuthTokensDTO } from './dto/auth-tokens.dto';
 import { RefreshDTO } from './dto/refresh.dto';
 import { SignUpDTO } from './dto/sign-up.dto';
-import { Role } from '../role/model/role.model';
-import { RoleService } from '../role/role.service';
-import { UserRoleRepository } from '../role/user-role.repository';
 
 @Injectable()
 export class AuthService {
@@ -23,8 +20,6 @@ export class AuthService {
     private readonly hashService: HashService,
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
-    private readonly roleService: RoleService,
-    private readonly userRoleRepository: UserRoleRepository,
   ) {}
 
   async signIn({ email, password }: SignInDTO): Promise<AuthTokensDTO> {
@@ -34,10 +29,7 @@ export class AuthService {
       throw new UnauthorizedException(`Credentials don't match.`);
     }
 
-    const accessToken: string = await this.generateAccessToken(user);
-    const refreshToken: string = await this.generateRefreshToken(user);
-
-    return { accessToken, refreshToken };
+    return this.generateAuthTokens(user);
   }
 
   async refresh({ refreshToken }: RefreshDTO): Promise<AccessTokenDTO> {
@@ -56,39 +48,24 @@ export class AuthService {
     }
   }
 
-  async signUp({ roles: initRolesIds, ...rest }: SignUpDTO): Promise<void> {
-    if (await this.userService.repository.findByEmail(rest.email)) {
-      throw new ConflictException(`Email is already occupied`);
+  async signUp(payload: SignUpDTO): Promise<AuthTokensDTO> {
+    const existingUser: User = await this.userService.repository.findByEmail(
+      payload.email,
+    );
+    if (existingUser) {
+      throw new ConflictException(`User with that email already exists`);
     }
 
-    const rolesIds: string[] = [initRolesIds[0]];
-    const roles: Role[] = await this.roleService.repository.findAllByIds(
-      rolesIds,
-    );
+    const user: User = await this.userService.create(payload);
 
-    if (roles.length === 0) {
-      throw new ConflictException(
-        `You have to choose at least one valid role.`,
-      );
-    }
+    return this.generateAuthTokens(user);
+  }
 
-    const areRolesChoosable: boolean = roles.every(
-      (role: Role) => role.isChoosable,
-    );
+  async generateAuthTokens(user: User): Promise<AuthTokensDTO> {
+    const accessToken: string = await this.generateAccessToken(user);
+    const refreshToken: string = await this.generateRefreshToken(user);
 
-    if (!areRolesChoosable) {
-      throw new ConflictException('Some of the roles are forbidden.');
-    }
-
-    // create user and assoicate him with the roles
-    const user: User = await this.userService.create({ roles, ...rest });
-    await this.userRoleRepository.createMany(
-      roles.map((role: Role) => ({
-        roleId: role.id,
-        userId: user.id,
-      })),
-    );
-    return;
+    return { accessToken, refreshToken };
   }
 
   async generateAccessToken(user: User): Promise<string> {
@@ -111,7 +88,7 @@ export class AuthService {
   private extractJwtUserPayload(user: User): JwtPayloadDTO {
     return {
       userId: user.id,
-      roles: user.roles,
+      role: user.role,
     };
   }
 }

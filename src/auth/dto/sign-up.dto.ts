@@ -1,20 +1,7 @@
-import {
-  IsNotEmpty,
-  IsString,
-  IsEmail,
-  Length,
-  IsArray,
-  ArrayNotEmpty,
-  IsUUID,
-} from 'class-validator';
+import { IsNotEmpty, IsString, IsEmail, Length, IsIn } from 'class-validator';
+import { Role } from '../../user/type/role.enum';
 
 export class SignUpDTO {
-  @IsNotEmpty()
-  @IsArray()
-  @ArrayNotEmpty()
-  @IsUUID('4', { each: true })
-  roles: string[];
-
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -27,4 +14,8 @@ export class SignUpDTO {
   @IsNotEmpty()
   @Length(6)
   password: string;
+
+  @IsNotEmpty()
+  @IsIn([Role.BARBER, Role.CUSTOMER])
+  role: Role;
 }

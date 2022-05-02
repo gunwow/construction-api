@@ -2,27 +2,33 @@ import sequelize, { DataTypes } from 'sequelize';
 import { IMigratorOptions } from '../type';
 
 export const up = async ({ context }: IMigratorOptions): Promise<void> => {
-  await context.createTable('organizations', {
+  await context.createTable('Users', {
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
       primaryKey: true,
     },
-    logo: {
-      type: DataTypes.TEXT,
-    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    address: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    jib: {
+    email: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    role: {
+      type: DataTypes.ENUM,
+      values: ['admin', 'barber', 'customer'],
+      allowNull: false,
+    },
+    verifiedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -35,36 +41,8 @@ export const up = async ({ context }: IMigratorOptions): Promise<void> => {
       defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
     },
   });
-
-  await context.createTable('users_organizations', {
-    id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      allowNull: false,
-      primaryKey: true,
-    },
-    userId: {
-      type: DataTypes.UUID,
-      references: {
-        model: 'users',
-        key: 'id',
-      },
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
-    },
-    organizationId: {
-      type: DataTypes.UUID,
-      references: {
-        model: 'organizations',
-        key: 'id',
-      },
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
-    },
-  });
 };
 
 export const down = async ({ context }: IMigratorOptions): Promise<void> => {
-  await context.dropTable('users_organizations');
-  await context.dropTable('organizations');
+  await context.dropTable('Users');
 };

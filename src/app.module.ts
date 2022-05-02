@@ -9,11 +9,10 @@ import { DatabaseModule } from './common/database';
 import { CommandModule } from 'nestjs-command';
 import { APP_PIPE } from '@nestjs/core';
 import { UserModule } from './user/user.module';
-import { RoleModule } from './role/role.module';
 import { AuthModule } from './auth/auth.module';
 import { AuthMiddleware } from './auth/middleware/auth.middleware';
 import { HashModule } from './hash/hash.module';
-import { OrganizationModule } from './organization/organization.module';
+import { BarberShopModule } from './barber-shop/barber-shop.module';
 
 @Module({
   imports: [
@@ -23,10 +22,9 @@ import { OrganizationModule } from './organization/organization.module';
     DatabaseModule,
     CommandModule,
     UserModule,
-    RoleModule,
     AuthModule,
     HashModule,
-    OrganizationModule,
+    BarberShopModule,
   ],
   providers: [
     {

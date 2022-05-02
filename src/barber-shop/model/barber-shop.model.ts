@@ -5,15 +5,13 @@ import {
   DataType,
   Default,
   ForeignKey,
+  BelongsTo,
+  DefaultScope,
 } from 'sequelize-typescript';
 import { User } from '../../user/model/user.model';
-import { Organization } from './organization.model';
 
-@Table({
-  tableName: 'users_organizations',
-  timestamps: false,
-})
-export class UserOrganization extends Model {
+@Table
+export class BarberShop extends Model {
   @Default(DataType.UUIDV4)
   @Column({
     primaryKey: true,
@@ -21,17 +19,34 @@ export class UserOrganization extends Model {
   })
   id: string;
 
-  @ForeignKey(() => Organization)
   @Column({
-    type: DataType.UUIDV4,
     allowNull: false,
   })
-  organizationId: string;
+  name: string;
 
   @ForeignKey(() => User)
   @Column({
-    type: DataType.UUIDV4,
     allowNull: false,
   })
   userId: string;
+
+  @Column
+  imageURL: string | null;
+
+  @Column
+  coverImageURL: string | null;
+
+  @Column({
+    allowNull: false,
+  })
+  address: string;
+
+  @Column
+  longitude: number | null;
+
+  @Column
+  latitude: number | null;
+
+  @BelongsTo(() => User)
+  user: User;
 }

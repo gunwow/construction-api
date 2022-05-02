@@ -1,23 +1,7 @@
-import {
-  Model,
-  Column,
-  DataType,
-  Default,
-  Table,
-  BelongsToMany,
-  DefaultScope,
-} from 'sequelize-typescript';
-import { Organization } from '../../organization/model/organization.model';
-import { UserOrganization } from '../../organization/model/user-organization.model';
-import { Role } from '../../role/model/role.model';
-import { UserRole } from '../../role/model/user-role.model';
+import { Model, Column, DataType, Default, Table } from 'sequelize-typescript';
+import { Role } from '../type/role.enum';
 
-@DefaultScope(() => ({
-  include: [Role, Organization],
-}))
-@Table({
-  tableName: 'users',
-})
+@Table
 export class User extends Model {
   @Default(DataType.UUIDV4)
   @Column({
@@ -44,11 +28,12 @@ export class User extends Model {
   @Column({
     allowNull: true,
   })
-  activatedAt: Date | null;
+  verifiedAt: Date | null;
 
-  @BelongsToMany(() => Role, () => UserRole)
-  roles: Role[];
-
-  @BelongsToMany(() => Organization, () => UserOrganization)
-  organizations: Organization[];
+  @Column({
+    allowNull: false,
+    type: DataType.ENUM,
+    values: Object.values(Role),
+  })
+  role: Role;
 }

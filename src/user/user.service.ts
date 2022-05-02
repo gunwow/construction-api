@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { BaseCrudService, ModelPayload } from '../common/crud';
 import { HashService } from '../hash/hash.service';
 import { User } from './model/user.model';
